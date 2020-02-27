@@ -1,4 +1,8 @@
 function _init()
+  pal(0, 129, 1)
+  pal(13, 140, 1)
+  pal(5, 13, 1)
+  pal(14, 143, 1)
   _new()
   _gameover=true
   _gameovertime=100
@@ -39,7 +43,7 @@ function _draw()
     if _star.y<0 then _star.y=127 end
     if _star.y>127 then _star.y=0 end
     srand(i)
-    _colors={6,13,1}
+    _colors={5,13,1}
     _camera(0,0)
     circ(_x,_y,0,_colors[_star.z])
   end
