@@ -1,0 +1,16 @@
+{
+  "name": "comet-crash",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "watch-2k": "node tools/watch --src=src/2k --dest=carts --name=comet-crash-2k",
+    "watch-plus": "node tools/watch --src=src/plus --dest=carts --name=comet-crash-plus"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "chalk": "^3.0.0",
+    "minimist": "^1.2.0"
+  }
+}
