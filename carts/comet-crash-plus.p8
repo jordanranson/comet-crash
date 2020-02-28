@@ -5,6 +5,7 @@ _flashn=0
 _flash=false
 _newgame=true
 _instructions=false
+_dangern=0
 _cam={x=0,y=0}
 _scrn={
   x=0,
@@ -227,8 +228,10 @@ function _draw()
           _instructions=false
           _new()
           _wave()
+          sfx(2)
         elseif _newgame then
           _instructions=true
+          sfx(2)
         end
       end
     end
@@ -237,10 +240,19 @@ function _draw()
     if btn(1) then _player.vx+=_x end
     if btn(2) then _player.vy-=_x end
     if btn(3) then _player.vy+=_x end
+    if btn(0) or btn(1) or btn(2) or btn(3) then
+      sfx(5)
+      _color=_ramps[1]
+      if _player.s>0 then
+        _color=_ramps[2]
+      end
+      _emit(1,_player.x,_player.y,_player.vx/2,_player.vy/2,_color,10)
+    end
     if _player.s>0 and _blasting<1 then
       if btnp(4) or btnp(5) then
         _shake(3)
         _emit(100,_player.x,_player.y,7,7,_ramps[2],50)
+        sfx(0)
         _blasting=45
         _immune=0
         _player.s=0
@@ -276,6 +288,7 @@ function _draw()
       _emit(50,_player.x,_player.y,3,3,{12,15,13,14},30)
       _player.s=1
       _immune=0
+      sfx(1)
     end
   end
 
@@ -324,6 +337,7 @@ function _draw()
           del(_comets,_comet)
           _shake(3)
           _emit(50,_player.x,_player.y,3,3,_ramps[2],30)
+          sfx(3)
           if _blasting<1 then
             _immune=60
             _score+=10
@@ -336,6 +350,7 @@ function _draw()
             _gameover=true
             _gameovertime=0
             _shake(7)
+            sfx(3)
             _emit(90,_player.x,_player.y,3,3,_ramps[1],200)
             _emit(10,_comet.x,_comet.y,3,3,_ramps[3],200)
           end
@@ -376,10 +391,10 @@ function _draw()
         circfill(_comet.x,_comet.y,_r+1+rnd(2),_color)
         -- tail
         if abs(_comet.vx)>3.5 or abs(_comet.vy)>3.5 then
-          _emit(-1,_comet.x,_comet.y,1,1,{_color},10)
+          -- _emit(-1,_comet.x,_comet.y,1,1,{_color},10)
         end
         if _comet==_player and _player.s>0 then
-          _emit(-1,_comet.x,_comet.y,1,1,{_color},10)
+          -- _emit(-1,_comet.x,_comet.y,1,1,{_color},10)
         end
         for i=1,12 do
           _pct=i/(12)
@@ -398,6 +413,7 @@ function _draw()
 
     -- indicator ui
     _camera(0,0)
+    _danger=0
     if not _gameover then
       for i,_comet in pairs(_comets) do
         if i<#_comets then
@@ -407,9 +423,11 @@ function _draw()
           or abs(_dy)>64 then
             _color=8
             if abs(_dx)<96
-            and abs(_dy)<96
-            and _flash then
-              _color=10
+            and abs(_dy)<96 then
+              if _flash then
+                _color=10
+              end
+              _danger+=1
             end
             _r=atan2(_dx,_dy)
             _x=-cos(_r)*50
@@ -438,12 +456,18 @@ function _draw()
         line(_x+64,_y+64,_dx+64,_dy+64,_color)
       end
     end
+    if _dangern==0 and _danger>0 then
+      sfx(4)
+    end
+    _dangern+=1
+    _dangern=_dangern%4
 
     -- other ui
     if not _newgame then
       print('wave  '.._wavenum,3,3,12)
       print('score '.._score,3,10,12)
-    else
+    end
+    if _newgame and not _instructions then
       _player.vx = -7.5
       _player.vy = 5
     end
@@ -489,13 +513,15 @@ function _draw()
       if _flash then print('press z/x',46,90,7) end
     end
     if _instructions then
+      _player.vx *= 0.95
+      _player.vy *= 0.95
       _print('collect pink power-ups|   to get angry and|smash all your enemies',19,44,1)
       _print('collect #pink power-ups|   to get @angry and|smash all your !enemies',19,42,12)
       if _flash then print('press z/x',46,90,7) end
     end
   end
 __gfx__
-0000000000000000007777777760000000000000000000000000000007777700000000007777700000477777777777a000c77777777777777750000000000000
+000000000000000000777777776000000000000000000000000000000677780000000000d777200000477777777777a000c77777777777777750000000000000
 0000000000000000733444555660000000000000000000000000000006888a0000000000d222300000555666888aaab000ccddd2223334445550000000000000
 0000000000000007333444555660000000000000000000000000000006888a7000000007d222300000555666888aaab000ccddd2223334445550000000000000
 0000000000000072333444555660000000000000000000000000000006888aa70000007dd222300000555666888aaab000ccddd2223334445550000000000000
@@ -548,3 +574,10 @@ __gfx__
 00000000000000000000000000000000002888888888000888820000088888a8888888a8888888a0088888800008888000000000000000000000000000000000
 00000000000000000000000000000000000088888820000888800000008888820222288888888800008882000000882000000000000000000000000000000000
 00000000000000000000000000000000000000000000000020000000000000000000008888880000000000000000000000000000000000000000000000000000
+__sfx__
+010400001e6721866214662116520e6520c6420a64207642066420563204632046320363203622036220262202622026220262200612006120061200612006120061200612006120061200612006120061500602
+010200000047102471044610546107451024510c4710e471104611146113451184511a4711c4711d4611f461244512645128471294712b46130465324553444535435374251b4001d4001f4001b4001b4001f400
+010300001b370273661b356273461b336273261b315273151b3050330302304023050130301304013050030300304003050030300304003050030300304003050030500303003040030500305003050030500300
+010200001e3731836414365113530e3540c3450a34307344063450533304334043350333303324033250232302324023250232300314003150031300314003150031300314003150031500305003020030200302
+010a00001843106415284002840028400284002840028400284002840028400284002840028400284002840028400284002840000405004050040500405004050040500405004050040500405004050040500405
+010400002461130615246002460024600246002460024600006000060000600006000060000600006000060000600006000060000600006000060000600006000060000600006000060000600006000060000600

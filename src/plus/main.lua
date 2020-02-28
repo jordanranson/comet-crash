@@ -59,8 +59,10 @@ function _draw()
           _instructions=false
           _new()
           _wave()
+          sfx(2)
         elseif _newgame then
           _instructions=true
+          sfx(2)
         end
       end
     end
@@ -69,10 +71,19 @@ function _draw()
     if btn(1) then _player.vx+=_x end
     if btn(2) then _player.vy-=_x end
     if btn(3) then _player.vy+=_x end
+    if btn(0) or btn(1) or btn(2) or btn(3) then
+      sfx(5)
+      _color=_ramps[1]
+      if _player.s>0 then
+        _color=_ramps[2]
+      end
+      _emit(1,_player.x,_player.y,_player.vx/2,_player.vy/2,_color,10)
+    end
     if _player.s>0 and _blasting<1 then
       if btnp(4) or btnp(5) then
         _shake(3)
         _emit(100,_player.x,_player.y,7,7,_ramps[2],50)
+        sfx(0)
         _blasting=45
         _immune=0
         _player.s=0
@@ -108,6 +119,7 @@ function _draw()
       _emit(50,_player.x,_player.y,3,3,{12,15,13,14},30)
       _player.s=1
       _immune=0
+      sfx(1)
     end
   end
 
@@ -156,6 +168,7 @@ function _draw()
           del(_comets,_comet)
           _shake(3)
           _emit(50,_player.x,_player.y,3,3,_ramps[2],30)
+          sfx(3)
           if _blasting<1 then
             _immune=60
             _score+=10
@@ -168,6 +181,7 @@ function _draw()
             _gameover=true
             _gameovertime=0
             _shake(7)
+            sfx(3)
             _emit(90,_player.x,_player.y,3,3,_ramps[1],200)
             _emit(10,_comet.x,_comet.y,3,3,_ramps[3],200)
           end
@@ -208,10 +222,10 @@ function _draw()
         circfill(_comet.x,_comet.y,_r+1+rnd(2),_color)
         -- tail
         if abs(_comet.vx)>3.5 or abs(_comet.vy)>3.5 then
-          _emit(-1,_comet.x,_comet.y,1,1,{_color},10)
+          -- _emit(-1,_comet.x,_comet.y,1,1,{_color},10)
         end
         if _comet==_player and _player.s>0 then
-          _emit(-1,_comet.x,_comet.y,1,1,{_color},10)
+          -- _emit(-1,_comet.x,_comet.y,1,1,{_color},10)
         end
         for i=1,12 do
           _pct=i/(12)
@@ -230,6 +244,7 @@ function _draw()
 
     -- indicator ui
     _camera(0,0)
+    _danger=0
     if not _gameover then
       for i,_comet in pairs(_comets) do
         if i<#_comets then
@@ -239,9 +254,11 @@ function _draw()
           or abs(_dy)>64 then
             _color=8
             if abs(_dx)<96
-            and abs(_dy)<96
-            and _flash then
-              _color=10
+            and abs(_dy)<96 then
+              if _flash then
+                _color=10
+              end
+              _danger+=1
             end
             _r=atan2(_dx,_dy)
             _x=-cos(_r)*50
@@ -270,12 +287,18 @@ function _draw()
         line(_x+64,_y+64,_dx+64,_dy+64,_color)
       end
     end
+    if _dangern==0 and _danger>0 then
+      sfx(4)
+    end
+    _dangern+=1
+    _dangern=_dangern%4
 
     -- other ui
     if not _newgame then
       print('wave  '.._wavenum,3,3,12)
       print('score '.._score,3,10,12)
-    else
+    end
+    if _newgame and not _instructions then
       _player.vx = -7.5
       _player.vy = 5
     end
@@ -321,6 +344,8 @@ function _draw()
       if _flash then print('press z/x',46,90,7) end
     end
     if _instructions then
+      _player.vx *= 0.95
+      _player.vy *= 0.95
       _print('collect pink power-ups|   to get angry and|smash all your enemies',19,44,1)
       _print('collect #pink power-ups|   to get @angry and|smash all your !enemies',19,42,12)
       if _flash then print('press z/x',46,90,7) end
