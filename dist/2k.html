@@ -1,5 +1,5 @@
 ﻿<html><head>
-<title>PICO-8 Cartridge</title>
+<title>Comet Crash (2K)</title>
 <meta name="viewport" content="width=device-width">
 <script type="text/javascript">
 
@@ -11,7 +11,7 @@
 	// if the browser can not create an audio context outside of a user gesture (e.g. on iOS), p8_autoplay has no effect
 	var p8_autoplay = false;
 
-	// When pico8_state is defined, PICO-8 will set .is_paused, .sound_volume and .frame_number each frame 
+	// When pico8_state is defined, PICO-8 will set .is_paused, .sound_volume and .frame_number each frame
 	// (used for determining button icons)
 	var pico8_state = [];
 
@@ -34,7 +34,7 @@
 	// Otherwise, PICO-8 will create its own one
 	var pico8_audio_context;
 
-	
+
 
 	p8_gfx_dat={
 			"p8b_pause1": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAOUlEQVRIx2NgGPbg/8cX/0F46FtAM4vobgHVLRowC6hm0YBbQLFFoxaM4FQ0dHPy0C1Nh26NNugBAAnizNiMfvbGAAAAAElFTkSuQmCC",
@@ -67,16 +67,16 @@
 				el.innerHTML = new_str;
 
 			// hide all buttons for touch mode (can pause with menu buttons)
-			
+
 			var is_visible = p8_is_running;
 
-			if (!p8_touch_detected && el.parentElement.id == "menu_buttons_touch") 
+			if (!p8_touch_detected && el.parentElement.id == "menu_buttons_touch")
 				is_visible = false;
 			if (p8_touch_detected && el.parentElement.id == "menu_buttons")
 				is_visible = false;
 
 			var is_fullscreen=(document.fullscreenElement || document.mozFullScreenElement || document.webkitIsFullScreen || document.msFullscreenElement);
-			if (is_fullscreen) 
+			if (is_fullscreen)
 				is_visible = false;
 
 			if (is_visible)
@@ -91,22 +91,22 @@
 	{
 		return x < 0 ? -x : x;
 	}
-	
+
 	// step 0 down 1 drag 2 up
 	function pico8_buttons_event(e, step)
 	{
 
 		if (!p8_is_running) return;
-	
+
 		pico8_buttons[0] = 0;
-		
+
 		var num = 0;
 		if (e.touches) num = e.touches.length;
-		
+
 		for (var i = 0; i < num; i++)
 		{
 			var touch = null;
-		
+
 			touch = e.touches[i];
 			//tindex = touch.identifier;
 			var x = touch.clientX;
@@ -118,7 +118,7 @@
 
 			var r = Math.min(w,h) / 12;
 			if (r > 40) r = 40;
-						
+
 			b = 0;
 
 			if (y < h - r*8)
@@ -129,7 +129,7 @@
 			{
 				// menu button: half as high as X O button
 				// stretch across right-hand half above X O buttons
-				if (x > w - r*3) 
+				if (x > w - r*3)
 					b |= 0x40;
 			}
 			else if (x < w/2 && x < r*6)
@@ -144,7 +144,7 @@
 				var dx = x - cx;
 				var dy = y - cy;
 
-				if (abs(dx) > abs(dy) * 0.6) // horizontal 
+				if (abs(dx) > abs(dy) * 0.6) // horizontal
 				{
 					if (dx < -deadzone) b |= 0x1;
 					if (dx > deadzone) b |= 0x2;
@@ -158,15 +158,15 @@
 			else if (x > w - r*6)
 			{
 				// button; diagonal split from bottom right corner
-			
+
 				mask = 0x30;
-				
+
 				// one or both of [X], [O]
 				if ( (h-y) > (w-x) * 0.8) b |= 0x10;
 				if ( (w-x) > (h-y) * 0.8) b |= 0x20;
 			}
 			pico8_buttons[0] |= b;
-		
+
 		}
 	}
 
@@ -190,7 +190,7 @@
 		}
 
 		// assumes frame doesn't have padding
-		
+
 		var is_fullscreen=(document.fullscreenElement || document.mozFullScreenElement || document.webkitIsFullScreen || document.msFullscreenElement);
 		var frame_width = p8_frame.offsetWidth;
 		var frame_height = p8_frame.offsetHeight;
@@ -246,8 +246,8 @@
 				// non-touch: center vertically
 				margin_top = (frame_height - csize)/2;
 			}
-		}		
-		
+		}
+
 		// mobile in portrait mode: put screen at top (w / a little space for fullscreen button)
 		// (don't cart about buttons overlapping screen)
 		if (p8_touch_detected && p8_is_running && document.body.clientWidth < document.body.clientHeight)
@@ -280,12 +280,12 @@
 			p8_container.style.marginTop = "0px";
 
 			// buttons
-			
+
 			// same as touch event handling
 			var w = window.innerWidth;
 			var h = window.innerHeight;
 
-			// doesn't work -- viewport changes size according to 
+			// doesn't work -- viewport changes size according to
 			//var w = document.body.clientWidth;
 			//var h = document.body.clientHeight;
 
@@ -308,7 +308,7 @@
 			el.style.height = r*6;
 			if (el.getAttribute("src") != p8_gfx_dat["controls_left_panel"]) // optimisation: avoid reload? (browser should handle though)
 				el.setAttribute("src", p8_gfx_dat["controls_left_panel"]);
-			
+
 			// scroll to cart (need to stop running with X)
 			p8_frame.scrollIntoView(true);
 
@@ -339,12 +339,12 @@
 
 	function p8_create_audio_context()
 	{
-		if (pico8_audio_context) 
+		if (pico8_audio_context)
 		{
 			pico8_audio_context.resume();
 			return;
 		}
-		var webAudioAPI = window.AudioContext || window.webkitAudioContext || window.mozAudioContext || window.oAudioContext || window.msAudioContext;			
+		var webAudioAPI = window.AudioContext || window.webkitAudioContext || window.mozAudioContext || window.oAudioContext || window.msAudioContext;
 		if (webAudioAPI)
 		{
 			pico8_audio_context = new webAudioAPI;
@@ -376,7 +376,7 @@
 		if (p8_is_running) return;
 		p8_is_running = true;
 
-		// create audio context and wake it up (for iOS -- needs happen inside touch event)		
+		// create audio context and wake it up (for iOS -- needs happen inside touch event)
 		p8_create_audio_context();
 
 		// show touch elements
@@ -396,7 +396,7 @@
 		e = document.createElement("script");
 		p8_script = e;
 		e.onload = function(){
-			
+
 			// show canvas / menu buttons only after loading
 			el = document.getElementById("p8_playarea");
 			if (el) el.style.display="table";
@@ -405,7 +405,7 @@
 		e.type = "application/javascript";
 		e.src = "comet-crash-2k.js";
 		e.id = "e_script";
-		
+
 		document.body.appendChild(e); // load and run
 
 		// hide start button and show canvas / menu buttons. hide start button
@@ -424,7 +424,7 @@
 		}
 	}
 
-	
+
 	// gamepad  https://developer.mozilla.org/en-US/docs/Web/API/Gamepad_API/Using_the_Gamepad_API
 	// (sets bits in pico8_buttons[])
 	function p8_update_gamepads() {
@@ -491,7 +491,7 @@
 		    }
 			return;
 		}
-		
+
 		var el = document.getElementById("p8_playarea");
 
 		if ( el.requestFullscreen ) {
@@ -601,7 +601,7 @@ canvas{
 			<div style="display:flex; position:relative">
 				<canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault();" ></canvas>
 				<div id="menu_buttons" style="width:0px; height:164px">
-					<div class="p8_menu_button" style="position:relative; left:44px" id="p8b_controls" onClick="Module.pico8ToggleControlMenu();"></div>					
+					<div class="p8_menu_button" style="position:relative; left:44px" id="p8b_controls" onClick="Module.pico8ToggleControlMenu();"></div>
 					<div class="p8_menu_button" style="position:relative; left:44px" id="p8b_pause" onClick="Module.pico8TogglePaused();"></div>
 					<div class="p8_menu_button" style="position:relative; left:44px" id="p8b_sound" onClick="p8_create_audio_context(); Module.pico8ToggleSound();"></div>
 					<div class="p8_menu_button" style="position:relative; left:44px" id="p8b_full" onClick="p8_request_fullscreen();"></div>
@@ -611,19 +611,19 @@ canvas{
 
 			<!-- display after first layout update -->
 			<div  id="touch_controls_gfx"
-				  style=" pointer-events:none; display:table; 
+				  style=" pointer-events:none; display:table;
 						 position:fixed; top:0px; left:0px; border:0; width:100vw; height:100vh">
 
 					<img src="" id="controls_right_panel" style="position:absolute; opacity:0.5;">
 					<img src="" id="controls_left_panel" style="position:absolute;  opacity:0.5;">
-						
-			
+
+
 			</div> <!-- touch_controls_gfx -->
 
 			<script type="text/javascript">
-				
 
-				
+
+
 			</script>
 
 		</div> <!--p8_playarea -->
@@ -657,12 +657,11 @@ canvas{
 			}
 		};
 	}
-	
+
 </script>
 
 <!-- uncomment this if you want clipboard access
-	<textarea id="codo_textarea" class="emscripten" style="position:absolute; left:-9999px;"></textarea>	
+	<textarea id="codo_textarea" class="emscripten" style="position:absolute; left:-9999px;"></textarea>
 -->
 
 </body></html>
-
