@@ -350,4 +350,13 @@ function _draw()
       _print('collect #pink power-ups|   to get @angry and|smash all your !enemies',19,42,12)
       if _flash then print('press z/x',46,90,7) end
     end
+
+    -- external music state
+    if _newgame then
+      poke(0x5f80, 1)
+    elseif _gameover then
+      poke(0x5f80, 3)
+    else
+      poke(0x5f80, 2)
+    end
   end
