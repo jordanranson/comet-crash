@@ -73,8 +73,24 @@ function minify (source) {
 
 async function build () {
   let source = await readFile(`${sourcePath}/index.pmeta`)
+
+  // Macros
   delete require.cache[require.resolve(`${__dirname}/../${sourcePath}/macros.json`)]
   let macros = require(`${__dirname}/../${sourcePath}/macros.json`)
+
+  // Resources
+  let resources
+  try {
+    resources = await readFile(`${sourcePath}/resources.p8`)
+    resources = resources.split('\n')
+    const startsAt = resources.findIndex((line) => line.startsWith('__gfx__'))
+    resources.splice(0, startsAt-1)
+    resources = resources.map((line) => line.trim())
+    resources = resources.join('\n').trim()
+  } catch (err) {
+    resources = false
+  }
+
   let lines  = source.trim().split('\n')
   let files  = []
 
@@ -86,6 +102,12 @@ async function build () {
   source = files.join('\n')
   source = macrofy(source, macros)
   let minified = minify(source)
+
+  // Append resources if present
+  if (resources) {
+    source = [source, resources].join('\n')
+    minified = [minified, resources].join('\n')
+  }
 
   const fileHeader = `pico-8 cartridge // http://www.pico-8.com
 version 18

@@ -1,14 +1,14 @@
 function _init()
-  pal(0, 129, 1)
-  pal(13, 140, 1)
-  pal(5, 13, 1)
-  pal(14, 143, 1)
   _new()
   _gameover=true
   _gameovertime=100
 end
 
 function _draw()
+  pal(0, 129, 1)
+  pal(13, 140, 1)
+  pal(5, 13, 1)
+  pal(14, 143, 1)
   cls(0)
 
   -- flash
@@ -53,10 +53,15 @@ function _draw()
   _x=.05
   if _gameover or _newgame then
     if _gameovertime>45 then
-      if btnp(4) then
-        _newgame=false
-        _new()
-        _wave()
+      if btnp(4) or btnp(5) then
+        if _instructions or not _newgame then
+          _newgame=false
+          _instructions=false
+          _new()
+          _wave()
+        elseif _newgame then
+          _instructions=true
+        end
       end
     end
   else
@@ -270,9 +275,54 @@ function _draw()
     if not _newgame then
       print('wave  '.._wavenum,3,3,12)
       print('score '.._score,3,10,12)
+    else
+      _player.vx = -7.5
+      _player.vy = 5
     end
     if _gameovertime<100 then _gameovertime+=1 end
-    if _gameover and (_gameovertime>45 or _newgame) then
-      print('press z/x',44,61,7)
+    if _gameover and _gameovertime>45 and not _newgame then
+      if _flash then print('press z/x',44,61,7) end
+    end
+    if _newgame and not _instructions then
+      -- title particles
+      _x=rnd(80)-40
+      _y=rnd(20)-10
+      _emit(1,_x,_y,1,2,_ramps[4],10)
+      -- title comet
+      _x=41
+      _y=46
+      _r=7
+      _color=12+rnd(2)
+      _color2=7
+      circfill(_x,_y,_r+1+rnd(2),_color)
+      _vx = -7.5
+      _vy = 5
+      for i=1,15 do
+        _pct=i/(15)
+        _x2=_x-_vx*_r*_pct+(rnd(2)-1)
+        _y2=_y-_vy*_r*_pct+(rnd(2)-1)
+        circfill(
+          _x2,
+          _y2,
+          (1-(_pct))*_r*2,
+          _color
+        )
+      end
+      circfill(_x+1,_y-1,_r+rnd(3)-1,_color2)
+      -- title
+      _titlehueshift()
+      _color=9+abs(sin(time()*2))*2
+      pal(10,_color)
+      _color=8+abs(sin(time()*4))*2
+      pal(8,_color)
+      sspr(0,32,128,32,0,54)
+      pal(10,10)
+      pal(8,8)
+      if _flash then print('press z/x',46,90,7) end
+    end
+    if _instructions then
+      _print('collect pink power-ups|   to get angry and|smash all your enemies',19,44,1)
+      _print('collect #pink power-ups|   to get @angry and|smash all your !enemies',19,42,12)
+      if _flash then print('press z/x',46,90,7) end
     end
   end
